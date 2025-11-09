@@ -28,11 +28,11 @@ body {
 }
 
 /* Canvas siempre debajo; las otras capas se montan encima */
-#gamecanvas {
+/* #gamecanvas {
     display: block;
     background: url("images/background.png") center/cover no-repeat;
     z-index: 1;
-}
+} */
 
 /* HUD */
 #hud {
