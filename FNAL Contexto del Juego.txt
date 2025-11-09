@@ -1,0 +1,346 @@
+Diseño del videojuego
+
+Título tentativo: Five nights at Lucha
+1. Concepto general
+
+El juego es un arcade shooter top–down en el que el jugador controla a un sobreviviente atrapado en un área urbana cercada mientras oleadas de zombis avanzan desde los bordes del mapa. El objetivo es sobrevivir a tres oleadas consecutivas de 60 segundos cada una, eliminando la mayor cantidad posible de enemigos y gestionando recursos (vida, posición, power-ups).
+
+Se implementa íntegramente con HTML5 + <canvas> + JavaScript, sin motores externos, cumpliendo con el arquetipo de shooter definido en el proyecto.
+
+2. Arquetipo y vista
+
+Arquetipo: Arcade Shooter (top-down).
+
+Vista: Superior (top–down completo); toda la pantalla corresponde al área jugable.
+
+Área de juego: Un único escenario con límites definidos; los zombis aparecen desde los bordes.
+
+Estilo: Minimalista, legible; énfasis en claridad de colisiones y feedback visual.
+
+Esto mantiene al juego dentro del arquetipo solicitado sin derivar en RTS ni puzzle.
+
+3. Mecánicas principales
+3.1. Control del jugador
+
+Movimiento con teclado: WASD o flechas.
+
+Disparo:
+
+El jugador apunta con el mouse.
+
+Dispara al hacer clic izquierdo; se genera una bala en dirección al cursor.
+
+Restricciones:
+
+Velocidad constante.
+
+No atraviesa paredes u obstáculos.
+
+3.2. Disparo y balas
+
+Cada disparo crea un proyectil con:
+
+Posición inicial en el arma/jugador.
+
+Dirección normalizada hacia el cursor.
+
+Velocidad fija.
+
+Colisión:
+
+Si bala impacta zombi → se reduce vida del zombi.
+
+Si vida del zombi ≤ 0 → el zombi muere y otorga puntaje.
+
+Las balas se destruyen cuando:
+
+Salen del área de juego.
+
+Impactan un objetivo.
+
+3.3. Enemigos (zombis)
+
+Todos los zombis:
+
+Spawnean desde los bordes del mapa.
+
+Calculan vector hacia la posición actual del jugador.
+
+Se desplazan continuamente hacia él (IA de persecución sencilla).
+
+Tipos de zombis:
+
+Walker (básico)
+
+Vida: baja.
+
+Velocidad: lenta.
+
+Daño por contacto: bajo.
+
+Uso: relleno de la oleada, ideal para primeras fases.
+
+Runner (rápido)
+
+Vida: media.
+
+Velocidad: alta.
+
+Daño: medio.
+
+Función: presión sobre el jugador, obliga a reposicionarse.
+
+Brute (tanque)
+
+Vida: alta.
+
+Velocidad: lenta.
+
+Daño: alto.
+
+Función: objetivo prioritario; castiga errores de posicionamiento.
+
+3.4. Obstáculos
+
+Elementos estáticos rectangulares (cajas, barricadas, muros pequeños).
+
+Bloquean:
+
+El movimiento del jugador.
+
+El movimiento de zombis.
+
+(Opcional) El paso de balas, según diseño.
+
+Fuerzan al jugador a pensar la ruta y no solo correr en círculos.
+
+3.5. Daño y vida del jugador
+
+El jugador tiene una barra de vida inicial (por ejemplo, 100 puntos).
+
+Si un zombi toca al jugador:
+
+Se descuenta vida según tipo de zombi.
+
+Si la vida llega a 0:
+
+La partida termina (estado Game Over).
+
+4. Power-ups
+
+Aparecen de forma controlada sobre el mapa durante las oleadas; al ser recogidos aplican efectos temporales:
+
+Velocidad x2
+
+Incrementa la velocidad de movimiento del jugador por N segundos.
+
+Doble disparo
+
+Dispara dos proyectiles con ligera dispersión por cada clic durante N segundos.
+
+Inmunidad
+
+El jugador no recibe daño de zombis por N segundos (se indica visualmente).
+
+Reglas técnicas:
+
+Cada power-up tiene:
+
+Tipo.
+
+Posición.
+
+Tiempo de vida máximo si no se recoge.
+
+Al colisionar con el jugador:
+
+Se activa el efecto.
+
+Se registra tiempo de inicio y duración.
+
+Se aplica lógica de expiración en el loop.
+
+5. Sistema de oleadas (3 × 60 segundos)
+
+La partida dura 180 segundos, divididos en 3 oleadas de 60 s.
+Cada oleada incrementa dificultad mediante:
+
+Cantidad de zombis.
+
+Frecuencia de spawn.
+
+Composición de tipos.
+
+Oleada 1 (0–60 s)
+
+Objetivo: introducción, comprensión de controles.
+
+Enemigos:
+
+Solo Walkers.
+
+Parámetros orientativos:
+
+Spawn cada ~1.2–1.5 s.
+
+Velocidad baja.
+
+Power-ups:
+
+1–2 apariciones (por ejemplo, Velocidad x2, Doble disparo).
+
+Dificultad:
+
+Baja; pensada para que el jugador entienda movimiento y disparo.
+
+Oleada 2 (60–120 s)
+
+Objetivo: aumentar presión y variedad táctica.
+
+Enemigos:
+
+Walkers + Runners.
+
+Parámetros:
+
+Menor intervalo de spawn.
+
+Algunos Runners con velocidad notablemente mayor.
+
+Power-ups:
+
+1 Velocidad x2.
+
+1 Doble disparo.
+
+Dificultad:
+
+Media; obliga a moverse mejor y aprovechar power-ups.
+
+Oleada 3 (120–180 s)
+
+Objetivo: cierre intenso.
+
+Enemigos:
+
+Walkers + Runners + Brutes.
+
+Parámetros:
+
+Mayor frecuencia de spawn.
+
+Más Runners.
+
+Menos pero muy resistentes Brutes.
+
+Power-ups:
+
+1 Inmunidad (clave).
+
+Algún Doble disparo situacional.
+
+Dificultad:
+
+Alta; el jugador debe priorizar objetivos y gestionar espacio.
+
+Al completar la oleada 3:
+
+La partida termina y se calcula puntaje final.
+
+6. Puntaje y localStorage
+Lógica de puntuación
+
+Walker: +10 puntos.
+
+Runner: +20 puntos.
+
+Brute: +40 puntos.
+
+(Opcional) Bonificación por sobrevivir con vida alta.
+
+Persistencia
+
+Al final de la partida:
+
+Se compara el puntaje obtenido con el máximo guardado en localStorage.
+
+Si es mayor, se actualiza el “High Score”.
+
+En el menú principal:
+
+Se muestra el mejor puntaje histórico.
+
+Esto cumple el uso de almacenamiento local solicitado.
+
+7. HUD y Estados del juego
+HUD en pantalla
+
+Visible en todo momento durante la partida:
+
+Vida: barra o valor numérico.
+
+Puntaje actual.
+
+Oleada actual (1, 2, 3).
+
+Tiempo restante de la oleada.
+
+(Opcional) Indicador visual de power-ups activos.
+
+Estados del juego
+
+Menú principal
+
+Título.
+
+Botón "Jugar".
+
+Mostrar mejores puntajes.
+
+Botón mute música/sonido.
+
+Juego en curso (Playing)
+
+Loop activo.
+
+Spawn de zombis según oleada.
+
+HUD visible.
+
+Pausa (Paused)
+
+Activado con tecla (por ejemplo, P o Esc).
+
+Congela movimiento y timers.
+
+Menú superpuesto con opción "Reanudar" / "Salir".
+
+Game Over
+
+Mostar puntaje final.
+
+Indicar si se superó el récord.
+
+Botones: "Reintentar" y "Volver al menú".
+
+Victoria (opcional si se define así)
+
+Si sobrevive las 3 oleadas:
+
+Mensaje de éxito + puntaje final.
+
+8. Audio
+
+Música de fondo en bucle durante el juego (con opción de silenciar).
+
+Efectos:
+
+Disparo.
+
+Golpe / muerte de zombi.
+
+Activación de power-up.
+
+(Opcional) Sonido de daño al jugador / Game Over.
+
+Controlado desde un módulo sencillo para no ensuciar la lógica principal.
